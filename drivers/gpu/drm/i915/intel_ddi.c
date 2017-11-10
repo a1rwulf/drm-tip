@@ -2235,8 +2235,18 @@ static void intel_ddi_pre_enable(struct intel_encoder *encoder,
 
 	if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_HDMI))
 		intel_ddi_pre_enable_hdmi(encoder, crtc_state, conn_state);
-	else
+	else {
 		intel_ddi_pre_enable_dp(encoder, crtc_state, conn_state);
+
+		if (crtc_state->lspcon_active) {
+			struct intel_digital_port *dig_port =
+				enc_to_dig_port(&encoder->base);
+
+			dig_port->set_infoframes(&encoder->base,
+				crtc_state->has_infoframe,
+				crtc_state, conn_state);
+               }
+	}
 }
 
 static void intel_disable_ddi_buf(struct intel_encoder *encoder)
@@ -2887,8 +2897,6 @@ void intel_ddi_init(struct drm_i915_private *dev_priv, enum port port)
 	intel_encoder->crtc_mask = (1 << 0) | (1 << 1) | (1 << 2);
 	intel_encoder->cloneable = 0;
 
-	intel_infoframe_init(intel_dig_port);
-
 	if (init_dp) {
 		if (!intel_ddi_init_dp_connector(intel_dig_port))
 			goto err;
@@ -2918,6 +2926,7 @@ void intel_ddi_init(struct drm_i915_private *dev_priv, enum port port)
 				port_name(port));
 	}
 
+	intel_infoframe_init(intel_dig_port);
 	return;
 
 err:

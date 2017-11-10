@@ -1057,6 +1057,10 @@ struct intel_lspcon {
 	bool active;
 	enum drm_lspcon_mode mode;
 	enum lspcon_vendor vendor;
+
+	void (*write_infoframe)(struct drm_encoder *encoder,
+				const struct intel_crtc_state *crtc_state,
+				union hdmi_infoframe *frame);
 };
 
 struct intel_digital_port {
@@ -2030,6 +2034,18 @@ void intel_color_load_luts(struct drm_crtc_state *crtc_state);
 bool lspcon_init(struct intel_digital_port *intel_dig_port);
 void lspcon_resume(struct intel_lspcon *lspcon);
 void lspcon_wait_pcon_mode(struct intel_lspcon *lspcon);
+bool lspcon_ycbcr420_config(struct drm_connector *connector,
+			     struct intel_crtc_state *config);
+void lspcon_write_infoframe(struct drm_encoder *encoder,
+			    const struct intel_crtc_state *crtc_state,
+			    enum hdmi_infoframe_type type,
+			    const void *buf, ssize_t len);
+void lspcon_set_infoframes(struct drm_encoder *encoder,
+			   bool enable,
+			   const struct intel_crtc_state *crtc_state,
+			   const struct drm_connector_state *conn_state);
+bool lspcon_infoframe_enabled(struct drm_encoder *encoder,
+			      const struct intel_crtc_state *pipe_config);
 
 /* intel_pipe_crc.c */
 int intel_pipe_crc_create(struct drm_minor *minor);
