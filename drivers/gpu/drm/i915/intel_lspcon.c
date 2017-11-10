@@ -253,7 +253,7 @@ bool lspcon_ycbcr420_config(struct drm_connector *connector,
 	struct drm_display_info *info = &connector->display_info;
 	struct drm_display_mode *mode = &config->base.adjusted_mode;
 
-	if (drm_mode_is_420_only(info, mode)) {
+	if (drm_mode_is_420(info, mode)) {
 
 		if (!connector->ycbcr_420_allowed) {
 			DRM_ERROR("Platform doesn't support YCBCR420 output\n");
