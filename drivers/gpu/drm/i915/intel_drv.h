@@ -797,6 +797,9 @@ struct intel_crtc_state {
 
 	/* output format is YCBCR 4:2:0 */
 	bool ycbcr420;
+
+	/* LSPCON is active on port */
+	bool lspcon_active;
 };
 
 struct intel_crtc {
@@ -1184,6 +1187,12 @@ enc_to_mst(struct drm_encoder *encoder)
 static inline struct intel_dp *enc_to_intel_dp(struct drm_encoder *encoder)
 {
 	return &enc_to_dig_port(encoder)->dp;
+}
+
+static inline struct intel_lspcon *
+enc_to_intel_lspcon(struct drm_encoder *encoder)
+{
+	return &enc_to_dig_port(encoder)->lspcon;
 }
 
 static inline struct intel_digital_port *
@@ -1700,7 +1709,6 @@ void intel_hdmi_handle_sink_scrambling(struct intel_encoder *intel_encoder,
 				       bool scrambling);
 void intel_dp_dual_mode_set_tmds_output(struct intel_hdmi *hdmi, bool enable);
 void intel_infoframe_init(struct intel_digital_port *intel_dig_port);
-
 
 /* intel_lvds.c */
 void intel_lvds_init(struct drm_i915_private *dev_priv);

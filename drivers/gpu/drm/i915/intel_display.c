@@ -4632,7 +4632,8 @@ skl_update_scaler(struct intel_crtc_state *crtc_state, bool force_detach,
 	 */
 	need_scaling = src_w != dst_w || src_h != dst_h;
 
-	if (crtc_state->ycbcr420 && scaler_user == SKL_CRTC_INDEX)
+	if (crtc_state->ycbcr420 && scaler_user == SKL_CRTC_INDEX &&
+		!crtc_state->lspcon_active)
 		need_scaling = true;
 
 	/*
@@ -8141,9 +8142,15 @@ static void haswell_set_pipemisc(struct drm_crtc *crtc)
 			val |= PIPEMISC_DITHER_ENABLE | PIPEMISC_DITHER_TYPE_SP;
 
 		if (config->ycbcr420) {
-			val |= PIPEMISC_OUTPUT_COLORSPACE_YUV |
-				PIPEMISC_YUV420_ENABLE |
-				PIPEMISC_YUV420_MODE_FULL_BLEND;
+			val |= PIPEMISC_OUTPUT_COLORSPACE_YUV;
+			/*
+			 * LSPCON doesn't need scaling/blending to be done in
+			 * pipe. It just needs YCBCR444 input and proper AVI
+			 * infoframes for 4:2:0 output enabling.
+			 */
+			if (!config->lspcon_active)
+				val |= PIPEMISC_YUV420_ENABLE |
+				       PIPEMISC_YUV420_MODE_FULL_BLEND;
 		}
 
 		I915_WRITE(PIPEMISC(intel_crtc->pipe), val);

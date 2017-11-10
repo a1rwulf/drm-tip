@@ -512,6 +512,7 @@ bool lspcon_init(struct intel_digital_port *intel_dig_port)
 	struct intel_lspcon *lspcon = &intel_dig_port->lspcon;
 	struct drm_device *dev = intel_dig_port->base.base.dev;
 	struct drm_i915_private *dev_priv = to_i915(dev);
+	struct drm_connector *connector = &dp->attached_connector->base;
 
 	if (!HAS_LSPCON(dev_priv)) {
 		DRM_ERROR("LSPCON is not supported on this platform\n");
@@ -536,6 +537,7 @@ bool lspcon_init(struct intel_digital_port *intel_dig_port)
 		return false;
 	}
 
+	connector->ycbcr_420_allowed = true;
 	lspcon->active = true;
 	DRM_DEBUG_KMS("Success: LSPCON init\n");
 	return true;
