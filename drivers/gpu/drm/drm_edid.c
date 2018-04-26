@@ -1692,12 +1692,20 @@ struct edid *drm_get_edid(struct drm_connector *connector,
 {
 	struct edid *edid;
 
-	if (connector->force == DRM_FORCE_OFF)
+	if (connector->force == DRM_FORCE_OFF) {
+		DRM_DEBUG_KMS("a1rwulf - connector force is DRM_FORCE_OFF\n");
 		return NULL;
+	}
+	
+	int error = drm_probe_ddc(adapter);
+	DRM_DEBUG_KMS("a1rwulf - drm_probe_dcc returns: %d\n", error);
 
-	if (connector->force == DRM_FORCE_UNSPECIFIED && !drm_probe_ddc(adapter))
+	if (connector->force == DRM_FORCE_UNSPECIFIED && !error) {
+		DRM_DEBUG_KMS("a1rwulf - drm_probe_dcc bail out\n");
 		return NULL;
+	}
 
+	DRM_DEBUG_KMS("a1rwulf - call drm_do_get_edid\n");
 	edid = drm_do_get_edid(connector, drm_do_probe_ddc_edid, adapter);
 	if (edid)
 		drm_get_displayid(connector, edid);
