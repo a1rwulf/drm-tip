@@ -1507,6 +1507,8 @@ drm_do_probe_ddc_edid(void *data, u8 *buf, unsigned int block, size_t len)
 		 */
 		ret = i2c_transfer(adapter, &msgs[3 - xfers], xfers);
 
+		DRM_DEBUG_KMS("a1rwulf - i2c_transfer returns: %d\n", ret);
+
 		if (ret == -ENXIO) {
 			DRM_DEBUG_KMS("drm: skipping non-existent adapter %s\n",
 					adapter->name);
@@ -1514,7 +1516,11 @@ drm_do_probe_ddc_edid(void *data, u8 *buf, unsigned int block, size_t len)
 		}
 	} while (ret != xfers && --retries);
 
-	return ret == xfers ? 0 : -1;
+	DRM_DEBUG_KMS("a1rwulf - leave probe_ddc - ret[%d] xfers[%d] retries[%d]\n", ret, xfers, retries);
+	int finalret = ret == xfers ? 0 : -1;
+	DRM_DEBUG_KMS("a1rwulf - leave probe_ddc - return: %d\n", finalret);
+
+	return finalret;
 }
 
 static void connector_bad_edid(struct drm_connector *connector,
